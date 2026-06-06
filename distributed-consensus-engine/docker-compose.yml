@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  node1:
+    build: .
+    command: python src/node.py
+    ports:
+      - "5000:5000"
+
+  node2:
+    build: .
+    command: python src/node_2.py
+    ports:
+      - "5001:5001"
+
+  node3:
+    build: .
+    command: python src/node_3.py
+    ports:
+      - "5002:5002"
+
+  node4:
+    build: .
+    command: python src/node_4.py
+    ports:
+      - "5003:5003"
+
+  node5:
+    build: .
+    command: python src/node_5.py
+    ports:
+      - "5004:5004"
