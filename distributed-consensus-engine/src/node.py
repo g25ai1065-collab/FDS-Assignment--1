@@ -7,6 +7,8 @@ LEADER_ID = 1
 
 ledger = []
 
+NODE_ALIVE = True
+
 @app.route("/")
 def home():
     return f"Node {NODE_ID} is running"
@@ -20,26 +22,42 @@ def leader():
 
 @app.route("/heartbeat")
 def heartbeat():
-
     return jsonify({
         "node": NODE_ID,
-        "alive": True
+        "alive": NODE_ALIVE
     })
 
 @app.route("/status")
 def status():
-
     return jsonify({
         "node": NODE_ID,
         "leader": LEADER_ID,
-        "alive": True
+        "alive": NODE_ALIVE
     })
 
+@app.route("/fail")
+def fail_node():
+    global NODE_ALIVE
+    NODE_ALIVE = False
+
+    return jsonify({
+        "node": NODE_ID,
+        "status": "FAILED"
+    })
+
+@app.route("/recover")
+def recover_node():
+    global NODE_ALIVE
+    NODE_ALIVE = True
+
+    return jsonify({
+        "node": NODE_ID,
+        "status": "RECOVERED"
+    })
 
 @app.route("/transaction", methods=["POST"])
 def transaction():
-
-    data = request.json
+    data = request.get_json()
 
     ledger.append(data)
 
