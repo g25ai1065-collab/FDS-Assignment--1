@@ -18,6 +18,24 @@ def leader():
         "node": NODE_ID
     })
 
+@app.route("/heartbeat")
+def heartbeat():
+
+    return jsonify({
+        "node": NODE_ID,
+        "alive": True
+    })
+
+@app.route("/status")
+def status():
+
+    return jsonify({
+        "node": NODE_ID,
+        "leader": LEADER_ID,
+        "alive": True
+    })
+
+
 @app.route("/transaction", methods=["POST"])
 def transaction():
 

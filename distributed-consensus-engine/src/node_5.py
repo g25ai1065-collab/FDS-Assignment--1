@@ -2,8 +2,8 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-NODE_ID = 4
-LEADER_ID = 4
+NODE_ID = 5
+LEADER_ID = 5
 
 ledger = []
 
@@ -18,10 +18,27 @@ def leader():
         "node": NODE_ID
     })
 
+@app.route("/heartbeat")
+def heartbeat():
+
+    return jsonify({
+        "node": NODE_ID,
+        "alive": True
+    })
+
+@app.route("/status")
+def status():
+
+    return jsonify({
+        "node": NODE_ID,
+        "leader": LEADER_ID,
+        "alive": True
+    })
+
 @app.route("/transaction", methods=["POST"])
 def transaction():
 
-    data = request.json
+    data = request.get_json()
 
     ledger.append(data)
 
