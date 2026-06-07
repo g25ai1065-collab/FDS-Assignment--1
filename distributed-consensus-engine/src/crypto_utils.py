@@ -1,6 +1,5 @@
-from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import padding
 
 
 def generate_keys():
@@ -15,11 +14,13 @@ def generate_keys():
 
 
 def sign_message(private_key, message):
-    return private_key.sign(
+    signature = private_key.sign(
         message.encode(),
         padding.PKCS1v15(),
         hashes.SHA256()
     )
+
+    return signature
 
 
 def verify_signature(public_key, message, signature):
@@ -30,6 +31,8 @@ def verify_signature(public_key, message, signature):
             padding.PKCS1v15(),
             hashes.SHA256()
         )
+
         return True
-    except:
+
+    except Exception:
         return False

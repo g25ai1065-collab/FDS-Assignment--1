@@ -1,14 +1,12 @@
 import requests
 
-transaction = {
-    "sender": "Alice",
-    "receiver": "Bob",
-    "amount": 200
-}
+tx = input("Transaction: ")
 
 response = requests.post(
-    "http://127.0.0.1:5000/transaction",
-    json=transaction
+    "http://localhost:5001/preprepare",
+    json={
+        "tx": tx
+    }
 )
 
 print(response.json())

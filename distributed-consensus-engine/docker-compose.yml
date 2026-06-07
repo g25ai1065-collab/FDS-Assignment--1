@@ -1,36 +1,47 @@
+version: '3.8'
+
 services:
+
   node1:
     build: .
-    command: python src/node.py
+    container_name: node1
+    environment:
+      - NODE_ID=1
     ports:
-      - "5000:5000"
+      - "5001:5000"
 
   node2:
     build: .
-    command: python src/node_2.py
+    container_name: node2
+    environment:
+      - NODE_ID=2
     ports:
-      - "5001:5001"
+      - "5002:5000"
 
   node3:
     build: .
-    command: python src/node_3.py
+    container_name: node3
+    environment:
+      - NODE_ID=3
     ports:
-      - "5002:5002"
+      - "5003:5000"
 
   node4:
     build: .
-    command: python src/node_4.py
+    container_name: node4
+    environment:
+      - NODE_ID=4
     ports:
-      - "5003:5003"
+      - "5004:5000"
 
   node5:
     build: .
-    command: python src/node_5.py
+    container_name: node5
+    environment:
+      - NODE_ID=5
     ports:
-      - "5004:5004"
+      - "5005:5000"
 
-  adversary:
-    build: .
-    command: python src/adversary.py
-    ports:
-      - "5005:5005"
+networks:
+  default:
+    name: consensus-network

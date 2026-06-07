@@ -1,24 +1,22 @@
-from flask import Flask, jsonify
+import requests
 
-app = Flask(__name__)
+tx = "MALICIOUS_TRANSACTION"
 
-NODE_ID = 6
+for port in [5001, 5002, 5003, 5004, 5005]:
 
-@app.route("/")
-def home():
-    return "Adversary Node Running"
+    try:
 
-@app.route("/status")
-def status():
-    return jsonify({
-        "node": NODE_ID,
-        "role": "Adversary",
-        "alive": True,
-        "behavior": "Sending inconsistent messages"
-    })
+        response = requests.post(
+            f"http://localhost:{port}/prepare_pbft",
+            json={"tx": tx},
+            timeout=2
+        )
 
-if __name__ == "__main__":
-    app.run(
-        host="0.0.0.0",
-        port=5005
-    )
+        print(
+            f"Sent forged PBFT message to node on port {port}"
+        )
+
+    except Exception as e:
+
+        print(e)
+        
