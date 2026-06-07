@@ -4,16 +4,16 @@ app = Flask(__name__)
 
 NODE_ID = 2
 LEADER_ID = 1
+ROLE = "Follower"
+MODE = "A"
 
 ledger = []
 
 NODE_ALIVE = True
 
-
 @app.route("/")
 def home():
     return f"Node {NODE_ID} is running"
-
 
 @app.route("/leader")
 def leader():
@@ -22,7 +22,6 @@ def leader():
         "node": NODE_ID
     })
 
-
 @app.route("/heartbeat")
 def heartbeat():
     return jsonify({
@@ -30,15 +29,15 @@ def heartbeat():
         "alive": NODE_ALIVE
     })
 
-
 @app.route("/status")
 def status():
     return jsonify({
         "node": NODE_ID,
         "leader": LEADER_ID,
+        "role": ROLE,
+        "mode": MODE,
         "alive": NODE_ALIVE
     })
-
 
 @app.route("/fail")
 def fail_node():
@@ -50,7 +49,6 @@ def fail_node():
         "status": "FAILED"
     })
 
-
 @app.route("/recover")
 def recover_node():
     global NODE_ALIVE
@@ -61,7 +59,6 @@ def recover_node():
         "status": "RECOVERED"
     })
 
-
 @app.route("/ledger")
 def get_ledger():
     return jsonify({
@@ -69,23 +66,25 @@ def get_ledger():
         "ledger": ledger
     })
 
-
-@app.route("/replicate", methods=["POST"])
-def replicate():
-
-    data = request.get_json()
-
-    ledger.append(data)
-
+@app.route("/paxos/prepare")
+def paxos_prepare():
     return jsonify({
         "node": NODE_ID,
-        "status": "replicated"
+        "phase": "PREPARE",
+        "proposal_id": 1,
+        "response": "PROMISE"
     })
 
+@app.route("/pbft/preprepare")
+def pbft_preprepare():
+    return jsonify({
+        "node": NODE_ID,
+        "phase": "PRE-PREPARE",
+        "status": "RECEIVED"
+    })
 
 @app.route("/transaction", methods=["POST"])
 def transaction():
-
     data = request.get_json()
 
     ledger.append(data)
@@ -96,7 +95,6 @@ def transaction():
         "transaction": data,
         "ledger": ledger
     })
-
 
 if __name__ == "__main__":
     app.run(

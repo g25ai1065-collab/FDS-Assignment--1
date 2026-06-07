@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   node1:
     build: .
@@ -30,3 +28,9 @@ services:
     command: python src/node_5.py
     ports:
       - "5004:5004"
+
+  adversary:
+    build: .
+    command: python src/adversary.py
+    ports:
+      - "5005:5005"
