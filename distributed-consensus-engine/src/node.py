@@ -1,17 +1,27 @@
 from flask import Flask, request, jsonify
+import requests
 
 app = Flask(__name__)
 
 NODE_ID = 1
 LEADER_ID = 1
 
+FOLLOWERS = [
+    "http://node2:5001",
+    "http://node3:5002",
+    "http://node4:5003",
+    "http://node5:5004"
+]
+
 ledger = []
 
 NODE_ALIVE = True
 
+
 @app.route("/")
 def home():
     return f"Node {NODE_ID} is running"
+
 
 @app.route("/leader")
 def leader():
@@ -20,12 +30,14 @@ def leader():
         "node": NODE_ID
     })
 
+
 @app.route("/heartbeat")
 def heartbeat():
     return jsonify({
         "node": NODE_ID,
         "alive": NODE_ALIVE
     })
+
 
 @app.route("/status")
 def status():
@@ -34,6 +46,7 @@ def status():
         "leader": LEADER_ID,
         "alive": NODE_ALIVE
     })
+
 
 @app.route("/fail")
 def fail_node():
@@ -45,6 +58,7 @@ def fail_node():
         "status": "FAILED"
     })
 
+
 @app.route("/recover")
 def recover_node():
     global NODE_ALIVE
@@ -55,16 +69,54 @@ def recover_node():
         "status": "RECOVERED"
     })
 
-@app.route("/transaction", methods=["POST"])
-def transaction():
+
+@app.route("/ledger")
+def get_ledger():
+    return jsonify({
+        "node": NODE_ID,
+        "ledger": ledger
+    })
+
+
+@app.route("/replicate", methods=["POST"])
+def replicate():
+
     data = request.get_json()
 
     ledger.append(data)
 
     return jsonify({
+        "node": NODE_ID,
+        "status": "replicated"
+    })
+
+
+@app.route("/transaction", methods=["POST"])
+def transaction():
+
+    data = request.get_json()
+
+    ledger.append(data)
+
+    for follower in FOLLOWERS:
+
+        try:
+            requests.post(
+                f"{follower}/replicate",
+                json=data,
+                timeout=2
+            )
+
+        except:
+            pass
+
+    return jsonify({
+        "node": NODE_ID,
         "status": "committed",
+        "transaction": data,
         "ledger": ledger
     })
+
 
 if __name__ == "__main__":
     app.run(
